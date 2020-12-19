@@ -61,7 +61,7 @@ class _PhotoPreviewScreenState extends State<PhotoPreviewScreen> {
   Widget _processButtonWidget(String imgPath) {
     Future<ByteData> getBytesFromFile() async {
       Uint8List bytes = File(imgPath).readAsBytesSync() as Uint8List;
-      return ByteData.view(bytes.buffer); 
+      return ByteData.view(bytes.buffer);
     }
 
     Widget button = RaisedButton(
