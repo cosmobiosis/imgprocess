@@ -29,9 +29,7 @@ class _PhotoPreviewScreenState extends State<PhotoPreviewScreen> {
                 height: double.infinity,
                 width: double.infinity,
                 child: _adjustedImage(context, widget.imgPath)),
-            Container(
-                alignment: Alignment(0.0, 0.9),
-                child: _processButtonWidget(widget.imgPath))
+            _processButtonWidget(widget.imgPath),
           ],
         ),
       ),
@@ -59,32 +57,50 @@ class _PhotoPreviewScreenState extends State<PhotoPreviewScreen> {
     this.imgWidth = decodedImage.width;
     this.img = Image.file(imageFile, fit: BoxFit.fill);
   }
-}
 
-Widget _processButtonWidget(String imgPath) {
-  Future<ByteData> getBytesFromFile() async {
-    Uint8List bytes = File(imgPath).readAsBytesSync() as Uint8List;
-    return ByteData.view(bytes.buffer);
-  }
+  Widget _processButtonWidget(String imgPath) {
+    Future<ByteData> getBytesFromFile() async {
+      Uint8List bytes = File(imgPath).readAsBytesSync() as Uint8List;
+      return ByteData.view(bytes.buffer);
+    }
 
-  return RaisedButton(
-    onPressed: () {
-      getBytesFromFile();
-    },
-    textColor: Colors.white,
-    padding: const EdgeInsets.all(1.0),
-    child: Container(
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          colors: <Color>[
-            Color(0xFF0D47A1),
-            Color(0xFF1976D2),
-            Color(0xFF42A5F5),
-          ],
+    Widget button = RaisedButton(
+      onPressed: () {
+        getBytesFromFile();
+      },
+      textColor: Colors.white,
+      padding: const EdgeInsets.all(1.0),
+      child: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: <Color>[
+              Color(0xFF0D47A1),
+              Color(0xFF1976D2),
+              Color(0xFF42A5F5),
+            ],
+          ),
         ),
+        padding: const EdgeInsets.all(12.0),
+        child: const Text('Process Image', style: TextStyle(fontSize: 20)),
       ),
-      padding: const EdgeInsets.all(12.0),
-      child: const Text('Process Image', style: TextStyle(fontSize: 20)),
-    ),
-  );
+    );
+
+    return FutureBuilder(
+        future: _setImageInfo(imgPath),
+        builder: (context, snapshot) {
+          if (this.imgHeight == null || this.imgWidth == null) {
+            // Future hasn't finished yet, return a placeholder
+            return Center(child: CircularProgressIndicator());
+          }
+          return this.imgHeight < this.imgWidth
+              ? Container(
+                  alignment: Alignment(-0.9, 0),
+                  child: RotatedBox(quarterTurns: 1, child: button),
+                )
+              : Container(
+                  alignment: Alignment(0.0, 0.9),
+                  child: button,
+                );
+        });
+  }
 }
