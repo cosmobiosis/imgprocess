@@ -6,7 +6,7 @@ import 'package:firebase_ml_vision/firebase_ml_vision.dart';
 
 class ProcessedResultScreen extends StatefulWidget {
   final String imgPath;
-  List<Face> faces;
+  final List<Face> faces;
 
   ProcessedResultScreen({this.imgPath, this.faces});
 
@@ -17,25 +17,16 @@ class ProcessedResultScreen extends StatefulWidget {
 class _ProcessedResultScreenState extends State<ProcessedResultScreen> {
   int _imgHeight;
   int _imgWidth;
-  Image _img;
+  var _imgFile;
+  List<Rect> _rects;
 
   @override
   Widget build(BuildContext context) {
-    List<Widget> stackChildren = [];
-    stackChildren.add(Container(
-        height: double.infinity,
-        width: double.infinity,
-        child: _adjustedImage(context, widget.imgPath)));
-    stackChildren.addAll(renderBoxes());
-
     return Scaffold(
-      body: Stack(
-        children: stackChildren,
-      ),
-    );
+        body: FittedBox(child: _processedImage(context, widget.imgPath)));
   }
 
-  Widget _adjustedImage(BuildContext context, String imgPath) {
+  Widget _processedImage(BuildContext context, String imgPath) {
     return FutureBuilder(
         future: _setImageInfo(imgPath),
         builder: (context, snapshot) {
@@ -43,46 +34,56 @@ class _ProcessedResultScreenState extends State<ProcessedResultScreen> {
             // Future hasn't finished yet, return a placeholder
             return Center(child: CircularProgressIndicator());
           }
+          Widget processedDisplay = FittedBox(
+              child: SizedBox(
+                  width: _imgWidth.toDouble(),
+                  height: _imgHeight.toDouble(),
+                  child: CustomPaint(
+                    painter: FacePainter(rects: _rects, imageFile: _imgFile),
+                  )));
           return this._imgHeight < this._imgWidth
-              ? RotatedBox(quarterTurns: 1, child: this._img)
-              : this._img;
+              ? RotatedBox(quarterTurns: 1, child: processedDisplay)
+              : processedDisplay;
         });
   }
 
-  Future<void> _setImageInfo(String imgPath) async {
-    File imageFile = new File(imgPath);
-    var decodedImage = await decodeImageFromList(imageFile.readAsBytesSync());
-    this._imgHeight = decodedImage.height;
-    this._imgWidth = decodedImage.width;
-    this._img = Image.file(imageFile, fit: BoxFit.fill);
+  Future<void> _setImageInfo(String _imgPath) async {
+    File imageFile = new File(_imgPath);
+    this._imgFile = await decodeImageFromList(imageFile.readAsBytesSync());
+    this._imgHeight = this._imgFile.height;
+    this._imgWidth = this._imgFile.width;
+    this._rects = new List<Rect>();
+    for (Face face in widget.faces) {
+      _rects.add(face.boundingBox);
+    }
+  }
+}
+
+class FacePainter extends CustomPainter {
+  List<Rect> rects;
+  var imageFile;
+
+  FacePainter({@required this.rects, @required this.imageFile});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    if (imageFile != null) {
+      canvas.drawImage(imageFile, Offset.zero, Paint());
+    }
+    print(rects.length);
+    for (Rect rectangle in rects) {
+      canvas.drawRect(
+        rectangle,
+        Paint()
+          ..color = Colors.teal
+          ..strokeWidth = 6.0
+          ..style = PaintingStyle.stroke,
+      );
+    }
   }
 
-  List<Widget> renderBoxes() {
-    List<Face> faces = widget.faces;
-
-    return faces.map((face) {
-      print(face.boundingBox.left);
-      return Positioned(
-        right: face.boundingBox.left,
-        bottom: face.boundingBox.top,
-        width: face.boundingBox.width.toDouble(),
-        height: face.boundingBox.height.toDouble(),
-        child: Container(
-          decoration: BoxDecoration(
-              border: Border.all(
-            color: Colors.red,
-            width: 3,
-          )),
-          child: Text(
-            "P(happy): ${face.smilingProbability} %",
-            style: TextStyle(
-              background: Paint()..color = Colors.red,
-              color: Colors.white,
-              fontSize: 15,
-            ),
-          ),
-        ),
-      );
-    }).toList();
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) {
+    return true;
   }
 }
