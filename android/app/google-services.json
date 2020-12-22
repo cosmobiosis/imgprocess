@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "11667348635",
+    "project_id": "imgprocess-51595",
+    "storage_bucket": "imgprocess-51595.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:11667348635:android:e3a0c681fba8cc7d0ffa3e",
+        "android_client_info": {
+          "package_name": "ucd.houman.imgprocess"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "11667348635-ed3atnbtnbcdh4070u7mdif3k2l2u67o.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBAqp6ONJGcDzY0LwX6lHqNBUfUHKg4uv4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "11667348635-ed3atnbtnbcdh4070u7mdif3k2l2u67o.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
