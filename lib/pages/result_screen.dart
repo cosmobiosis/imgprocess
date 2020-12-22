@@ -22,14 +22,13 @@ class _ProcessedResultScreenState extends State<ProcessedResultScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        body: FittedBox(child: _processedImage(context, widget.imgPath)));
+    return Scaffold(body: _processedImage(context, widget.imgPath));
   }
 
   Widget _processedImage(BuildContext context, String imgPath) {
     return FutureBuilder(
         future: _setImageInfo(imgPath),
-        builder: (context, snapshot) {
+        builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
           if (this._imgHeight == null || this._imgWidth == null) {
             // Future hasn't finished yet, return a placeholder
             return Center(child: CircularProgressIndicator());
@@ -47,7 +46,7 @@ class _ProcessedResultScreenState extends State<ProcessedResultScreen> {
         });
   }
 
-  Future<void> _setImageInfo(String _imgPath) async {
+  Future<int> _setImageInfo(String _imgPath) async {
     File imageFile = new File(_imgPath);
     this._imgFile = await decodeImageFromList(imageFile.readAsBytesSync());
     this._imgHeight = this._imgFile.height;
@@ -56,6 +55,7 @@ class _ProcessedResultScreenState extends State<ProcessedResultScreen> {
     for (Face face in widget.faces) {
       _rects.add(face.boundingBox);
     }
+    return 1;
   }
 }
 
