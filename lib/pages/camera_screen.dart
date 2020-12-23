@@ -41,10 +41,23 @@ class _TakePictureScreenState extends State<TakePictureScreen> {
       await controller.dispose();
     }
     controller = CameraController(cameraDescription, ResolutionPreset.high);
+    controller.addListener(() {
+      if (mounted) {
+        setState(() {});
+      }
+
+      if (controller.value.hasError) {
+        print('Camera error ${controller.value.errorDescription}');
+      }
+    });
+
     try {
       await controller.initialize();
     } on CameraException catch (e) {
       _showCameraException(e);
+    }
+    if (mounted) {
+      setState(() {});
     }
   }
 

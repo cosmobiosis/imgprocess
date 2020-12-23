@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:typed_data';
 import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -52,7 +53,8 @@ class _PhotoPreviewScreenState extends State<PhotoPreviewScreen> {
 
   Future<void> _setImageInfo(String _imgPath) async {
     File imageFile = new File(_imgPath);
-    var decodedImage = await decodeImageFromList(imageFile.readAsBytesSync());
+    Uint8List codedImage = await imageFile.readAsBytes();
+    var decodedImage = await decodeImageFromList(codedImage);
     this._imgHeight = decodedImage.height;
     this._imgWidth = decodedImage.width;
     this._img = Image.file(imageFile, fit: BoxFit.fill);
