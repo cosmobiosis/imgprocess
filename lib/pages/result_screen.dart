@@ -25,6 +25,7 @@ class _ProcessedResultScreenState extends State<ProcessedResultScreen> {
   List<Rect> _rects;
   List<String> _labels;
   List<Image> _faceImages;
+  List _recognitions;
   bool _busy;
 
   @override
@@ -87,14 +88,15 @@ class _ProcessedResultScreenState extends State<ProcessedResultScreen> {
     for (Face face in widget.faces) {
       _rects.add(face.boundingBox);
     }
-    this._labels = await getClassificationResults(_rects, codedImage, _imgPath);
-    print("Labels:");
-    for (String label in _labels) {
-      print(label);
-    }
-    this._faceImages = getGrayScaleFaceImages(_rects, codedImage)
-        .map((libImage) => Image.memory(encodeHelper(libImage)))
-        .toList();
+    // var recognitions =
+    //     await Tflite.detectObjectOnImage(path: _imgPath, numResultsPerClass: 1);
+    // setState(() {
+    //   _recognitions = recognitions;
+    // });
+    // print(_recognitions.first['detectedClass']);
+    // this._faceImages = getGrayScaleFaceImages(_rects, codedImage)
+    //     .map((libImage) => Image.memory(encodeHelper(libImage)))
+    //     .toList();
     return 1;
   }
 
@@ -118,12 +120,6 @@ class _ProcessedResultScreenState extends State<ProcessedResultScreen> {
             )
           ]),
     );
-  }
-
-  @override
-  void dispose() {
-    Tflite.close();
-    super.dispose();
   }
 }
 
