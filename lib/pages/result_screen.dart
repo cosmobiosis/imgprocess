@@ -27,11 +27,13 @@ class _ProcessedResultScreenState extends State<ProcessedResultScreen> {
   List<Image> _faceImages;
   List _recognitions;
   bool _busy;
+  bool _infoSet;
 
   @override
   void initState() {
     super.initState();
     _busy = true;
+    _infoSet = false;
     loadModel().then((val) {
       setState(() {
         _busy = false;
@@ -40,6 +42,7 @@ class _ProcessedResultScreenState extends State<ProcessedResultScreen> {
   }
 
   Future<void> loadModel() async {
+    Tflite.close();
     try {
       await Tflite.loadModel(
         model: "assets/tflite/ssd_mobilenet.tflite",
@@ -79,6 +82,8 @@ class _ProcessedResultScreenState extends State<ProcessedResultScreen> {
   }
 
   Future<int> _setImageInfo(String _imgPath) async {
+    if (_infoSet) return 1;
+    _infoSet = true;
     File imageFile = new File(_imgPath);
     Uint8List codedImage = await imageFile.readAsBytes();
     this._decodedImage = await decodeImageFromList(codedImage);
@@ -88,12 +93,11 @@ class _ProcessedResultScreenState extends State<ProcessedResultScreen> {
     for (Face face in widget.faces) {
       _rects.add(face.boundingBox);
     }
-    // var recognitions =
-    //     await Tflite.detectObjectOnImage(path: _imgPath, numResultsPerClass: 1);
-    // setState(() {
-    //   _recognitions = recognitions;
-    // });
-    // print(_recognitions.first['detectedClass']);
+    var recognitions = await Tflite.detectObjectOnImage(path: _imgPath);
+    print(recognitions.first["detectedClass"]);
+    setState(() {
+      _recognitions = recognitions;
+    });
     // this._faceImages = getGrayScaleFaceImages(_rects, codedImage)
     //     .map((libImage) => Image.memory(encodeHelper(libImage)))
     //     .toList();
