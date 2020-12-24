@@ -41,8 +41,8 @@ class _ProcessedResultScreenState extends State<ProcessedResultScreen> {
   Future<void> loadModel() async {
     try {
       await Tflite.loadModel(
-        model: "assets/model.tflite",
-        labels: "assets/model.txt",
+        model: "assets/tflite/ssd_mobilenet.tflite",
+        labels: "assets/tflite/ssd_mobilenet.txt",
       );
     } on Exception {
       print("Model Initlization Failure");
@@ -87,7 +87,7 @@ class _ProcessedResultScreenState extends State<ProcessedResultScreen> {
     for (Face face in widget.faces) {
       _rects.add(face.boundingBox);
     }
-    this._labels = await getClassificationResults(_rects, codedImage);
+    this._labels = await getClassificationResults(_rects, codedImage, _imgPath);
     print("Labels:");
     for (String label in _labels) {
       print(label);

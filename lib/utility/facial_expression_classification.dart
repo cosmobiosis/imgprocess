@@ -4,13 +4,14 @@ import 'package:image/image.dart';
 import 'package:tflite/tflite.dart';
 
 Future<List<String>> getClassificationResults(
-    List<Rect> rects, Uint8List codedImage) async {
+    List<Rect> rects, Uint8List codedImage, String imgPath) async {
   List<String> res = new List();
   List<Image> grayScaleImages = getGrayScaleFaceImages(rects, codedImage);
   for (Image face in grayScaleImages) {
     Image resizedImage = copyResize(face, width: 224, height: 224);
-    var recogs = await Tflite.runModelOnBinary(
-        binary: imageToByteListUint8(resizedImage, 224));
+    var recogs = await Tflite.detectObjectOnImage(
+      path: imgPath,
+    );
     var recog = recogs.first;
     res.add(
       "${recog["detectedClass"]} ${(recog["confidenceInClass"] * 100).toStringAsFixed(0)}%",

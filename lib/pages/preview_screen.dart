@@ -61,6 +61,8 @@ class _PhotoPreviewScreenState extends State<PhotoPreviewScreen> {
   }
 
   Widget _processButton(BuildContext context, String _imgPath) {
+    bool _firstPress = true;
+
     Future<void> _processImage() async {
       File imageFile = new File(_imgPath);
       final FirebaseVisionImage visionImage =
@@ -84,13 +86,16 @@ class _PhotoPreviewScreenState extends State<PhotoPreviewScreen> {
     }
 
     Widget button = RaisedButton(
-      onPressed: () {
-        _processImage();
+      onPressed: () async {
+        if (_firstPress) {
+          _firstPress = false;
+          _processImage();
+        }
       },
       textColor: Colors.white,
       padding: const EdgeInsets.all(1.0),
       child: Container(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: <Color>[
               Color(0xFF0D47A1),
@@ -100,7 +105,7 @@ class _PhotoPreviewScreenState extends State<PhotoPreviewScreen> {
           ),
         ),
         padding: const EdgeInsets.all(12.0),
-        child: const Text('Process Image', style: TextStyle(fontSize: 20)),
+        child: Text('Process Image', style: TextStyle(fontSize: 20)),
       ),
     );
 
