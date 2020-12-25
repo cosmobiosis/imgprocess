@@ -63,10 +63,7 @@ class _ProcessedResultScreenState extends State<ProcessedResultScreen> {
     return FutureBuilder(
         future: _setImageInfo(imgPath),
         builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
-          if (this._imgHeight == null ||
-              this._imgWidth == null ||
-              this._busy ||
-              this._faceImages == null) {
+          if (this._imgHeight == null || this._imgWidth == null || this._busy) {
             // Future hasn't finished yet, return a placeholder
             return Center(child: CircularProgressIndicator());
           }
@@ -91,10 +88,10 @@ class _ProcessedResultScreenState extends State<ProcessedResultScreen> {
       _rects.add(face.boundingBox);
     }
 
-    List<String> grayFacePaths =
-        await extractFacesToLocalFiles(_rects, codedImage);
-    this._faceImages =
-        grayFacePaths.map((path) => Image.file(new File(path))).toList();
+    // List<String> grayFacePaths =
+    //     await extractFacesToLocalFiles(_rects, codedImage);
+    // this._faceImages =
+    //     grayFacePaths.map((path) => Image.file(new File(path))).toList();
 
     var labels = await getClassificationResults(_rects, codedImage);
     setState(() {
