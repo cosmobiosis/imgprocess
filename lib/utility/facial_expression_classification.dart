@@ -11,7 +11,8 @@ Future<List<String>> getClassificationResults(
   List<String> classifiedLabels = new List();
   List<String> imgPaths = await extractFacesToLocalFiles(rects, codedImage);
   for (String path in imgPaths) {
-    print(path);
+    var res = await Tflite.runModelOnImage(path: path);
+    classifiedLabels.add(res.first["label"]);
   }
   return classifiedLabels;
 }
