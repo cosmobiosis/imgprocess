@@ -23,9 +23,8 @@ class _ProcessedResultScreenState extends State<ProcessedResultScreen> {
   int _imgWidth;
   var _decodedImage;
   List<Rect> _rects;
-  List<String> _labels;
   List<Image> _faceImages;
-  List _recognitions;
+  List<String> _labels;
   bool _busy;
   bool _infoSet;
 
@@ -64,21 +63,16 @@ class _ProcessedResultScreenState extends State<ProcessedResultScreen> {
     return FutureBuilder(
         future: _setImageInfo(imgPath),
         builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
-          if (this._imgHeight == null || this._imgWidth == null || this._busy) {
+          if (this._imgHeight == null ||
+              this._imgWidth == null ||
+              this._busy ||
+              this._faceImages == null) {
             // Future hasn't finished yet, return a placeholder
             return Center(child: CircularProgressIndicator());
           }
-          Widget processedDisplay = FittedBox(
-              child: SizedBox(
-                  width: _imgWidth.toDouble(),
-                  height: _imgHeight.toDouble(),
-                  child: CustomPaint(
-                    painter:
-                        FacePainter(rects: _rects, imageFile: _decodedImage),
-                  )));
           return this._imgHeight < this._imgWidth
-              ? RotatedBox(quarterTurns: 1, child: processedDisplay)
-              : processedDisplay;
+              ? RotatedBox(quarterTurns: 1, child: getProcessedDisplay())
+              : getProcessedDisplay();
           // return getRowOfCroppedFaces();
         });
   }
@@ -97,20 +91,60 @@ class _ProcessedResultScreenState extends State<ProcessedResultScreen> {
       _rects.add(face.boundingBox);
     }
 
-    // List<String> grayFacePaths =
-    //     await extractFacesToLocalFiles(_rects, codedImage);
-    // this._faceImages =
-    //     grayFacePaths.map((path) => Image.file(new File(path))).toList();
+    List<String> grayFacePaths =
+        await extractFacesToLocalFiles(_rects, codedImage);
+    this._faceImages =
+        grayFacePaths.map((path) => Image.file(new File(path))).toList();
 
-    var recognitions = await getClassificationResults(_rects, codedImage);
-    print("total faces labeled: " + recognitions.length.toString());
-    for (String recog in recognitions) {
-      print(recog);
-    }
+    var labels = await getClassificationResults(_rects, codedImage);
     setState(() {
-      _recognitions = recognitions;
+      _labels = labels;
     });
     return 1;
+  }
+
+  Widget getProcessedDisplay() {
+    Widget processedDisplay = FittedBox(
+        child: Stack(children: [
+      SizedBox(
+          width: _imgWidth.toDouble(),
+          height: _imgHeight.toDouble(),
+          child: CustomPaint(
+            painter: FacePainter(rects: _rects, imageFile: _decodedImage),
+          )),
+      ...renderTexts(),
+    ]));
+    return processedDisplay;
+  }
+
+  List<Widget> renderTexts() {
+    if (_labels == null || _labels.length == 0) return [];
+    if (_imgHeight == null || _imgWidth == null) return [];
+
+    Color color = Colors.red;
+
+    return _labels
+        .asMap()
+        .map((i, label) => MapEntry(
+            i,
+            Positioned(
+              left: _rects[i].left,
+              top: _rects[i].bottom,
+              width: _rects[i].width,
+              height: _rects[i].height,
+              child: Container(
+                child: Text(
+                  label,
+                  style: TextStyle(
+                    background: Paint()..color = color,
+                    color: Colors.white,
+                    fontSize: 15,
+                  ),
+                ),
+              ),
+            )))
+        .values
+        .toList();
   }
 
   Widget getRowOfCroppedFaces() {
@@ -130,7 +164,14 @@ class _ProcessedResultScreenState extends State<ProcessedResultScreen> {
                   ? <Widget>[Card()]
                   : this
                       ._faceImages
-                      .map((faceImage) => Card(child: faceImage))
+                      .asMap()
+                      .map((i, faceImage) => MapEntry(
+                          i,
+                          Card(
+                              child: Column(
+                            children: <Widget>[faceImage, Text(_labels[i])],
+                          ))))
+                      .values
                       .toList(), // this is a list containing Cards with image
             )
           ]),
