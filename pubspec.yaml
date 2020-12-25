@@ -31,7 +31,7 @@ dependencies:
   camera: ^0.5.2+1
   path_provider: ^1.1.0
   path: ^1.6.2
-  image_picker: ^0.6.1+8
+  image_picker: ^0.6.7+17
   firebase_ml_vision: ^0.9.10
   image: ^2.1.19
   tflite: ^1.1.1

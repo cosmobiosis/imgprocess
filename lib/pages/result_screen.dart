@@ -47,6 +47,8 @@ class _ProcessedResultScreenState extends State<ProcessedResultScreen> {
       await Tflite.loadModel(
         model: "assets/tflite/ssd_mobilenet.tflite",
         labels: "assets/tflite/ssd_mobilenet.txt",
+        // model: "assets/model.tflite",
+        // labels: "assets/model.txt",
       );
     } on Exception {
       print("Model Initlization Failure");
@@ -66,18 +68,18 @@ class _ProcessedResultScreenState extends State<ProcessedResultScreen> {
             // Future hasn't finished yet, return a placeholder
             return Center(child: CircularProgressIndicator());
           }
-          Widget processedDisplay = FittedBox(
-              child: SizedBox(
-                  width: _imgWidth.toDouble(),
-                  height: _imgHeight.toDouble(),
-                  child: CustomPaint(
-                    painter:
-                        FacePainter(rects: _rects, imageFile: _decodedImage),
-                  )));
-          return this._imgHeight < this._imgWidth
-              ? RotatedBox(quarterTurns: 1, child: processedDisplay)
-              : processedDisplay;
-          // return getRowOfCroppedFaces();
+          // Widget processedDisplay = FittedBox(
+          //     child: SizedBox(
+          //         width: _imgWidth.toDouble(),
+          //         height: _imgHeight.toDouble(),
+          //         child: CustomPaint(
+          //           painter:
+          //               FacePainter(rects: _rects, imageFile: _decodedImage),
+          //         )));
+          // return this._imgHeight < this._imgWidth
+          //     ? RotatedBox(quarterTurns: 1, child: processedDisplay)
+          //     : processedDisplay;
+          return getRowOfCroppedFaces();
         });
   }
 
@@ -86,6 +88,7 @@ class _ProcessedResultScreenState extends State<ProcessedResultScreen> {
     _infoSet = true;
     File imageFile = new File(_imgPath);
     Uint8List codedImage = await imageFile.readAsBytes();
+
     this._decodedImage = await decodeImageFromList(codedImage);
     this._imgHeight = this._decodedImage.height;
     this._imgWidth = this._decodedImage.width;
@@ -93,6 +96,10 @@ class _ProcessedResultScreenState extends State<ProcessedResultScreen> {
     for (Face face in widget.faces) {
       _rects.add(face.boundingBox);
     }
+    List<String> grayFacePaths =
+        await extractFacesToLocalFiles(_rects, codedImage);
+    this._faceImages =
+        grayFacePaths.map((path) => Image.file(new File(path))).toList();
     var recognitions = await Tflite.detectObjectOnImage(path: _imgPath);
     print(recognitions.first["detectedClass"]);
     setState(() {
@@ -117,10 +124,12 @@ class _ProcessedResultScreenState extends State<ProcessedResultScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisSize: MainAxisSize.min,
-              children: this
-                  ._faceImages
-                  .map((faceImage) => Card(child: faceImage))
-                  .toList(), // this is a list containing Cards with image
+              children: this._faceImages == null
+                  ? <Widget>[Card()]
+                  : this
+                      ._faceImages
+                      .map((faceImage) => Card(child: faceImage))
+                      .toList(), // this is a list containing Cards with image
             )
           ]),
     );
