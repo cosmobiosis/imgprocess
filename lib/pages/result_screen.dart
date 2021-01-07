@@ -40,6 +40,7 @@ class _ProcessedResultScreenState extends State<ProcessedResultScreen> {
     });
   }
 
+  // load the pre-trained model for TFLite library
   Future<void> loadModel() async {
     Tflite.close();
     try {
@@ -59,6 +60,7 @@ class _ProcessedResultScreenState extends State<ProcessedResultScreen> {
     return Scaffold(body: _processedImage(context, widget.imgPath));
   }
 
+  // async processing wrapper for processed image widget
   Widget _processedImage(BuildContext context, String imgPath) {
     return FutureBuilder(
         future: _setImageInfo(imgPath),
@@ -74,6 +76,7 @@ class _ProcessedResultScreenState extends State<ProcessedResultScreen> {
         });
   }
 
+  // process the image and set the image processed result data
   Future<int> _setImageInfo(String _imgPath) async {
     if (_infoSet) return 1;
     _infoSet = true;
@@ -100,6 +103,7 @@ class _ProcessedResultScreenState extends State<ProcessedResultScreen> {
     return 1;
   }
 
+  // image widget with processed results
   Widget getProcessedDisplay() {
     Widget processedDisplay = FittedBox(
         child: Stack(children: [
@@ -114,6 +118,7 @@ class _ProcessedResultScreenState extends State<ProcessedResultScreen> {
     return processedDisplay;
   }
 
+  // labels of classification results
   List<Widget> renderTexts() {
     if (_labels == null || _labels.length == 0) return [];
     if (_imgHeight == null || _imgWidth == null) return [];
@@ -144,6 +149,7 @@ class _ProcessedResultScreenState extends State<ProcessedResultScreen> {
         .toList();
   }
 
+  // frames of faces
   Widget getRowOfCroppedFaces() {
     return Container(
       margin: EdgeInsets.only(top: 20.0),

@@ -24,12 +24,9 @@ class _PhotoPreviewScreenState extends State<PhotoPreviewScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        child: Stack(
+        child: Column(
           children: <Widget>[
-            Container(
-                height: double.infinity,
-                width: double.infinity,
-                child: _adjustedImage(context, widget.imgPath)),
+            _adjustedImage(context, widget.imgPath),
             _processButton(context, widget.imgPath),
           ],
         ),
@@ -37,6 +34,7 @@ class _PhotoPreviewScreenState extends State<PhotoPreviewScreen> {
     );
   }
 
+  // generate image holder, first set the image and its meta data, then return the widget
   Widget _adjustedImage(BuildContext context, String imgPath) {
     return FutureBuilder(
         future: _setImageInfo(imgPath),
@@ -45,12 +43,14 @@ class _PhotoPreviewScreenState extends State<PhotoPreviewScreen> {
             // Future hasn't finished yet, return a placeholder
             return Center(child: CircularProgressIndicator());
           }
+          // make sure the taken image span the whole screen
           return this._imgHeight < this._imgWidth
               ? RotatedBox(quarterTurns: 1, child: this._img)
               : this._img;
         });
   }
 
+  // set image metadata and save the image to widget
   Future<void> _setImageInfo(String _imgPath) async {
     File imageFile = new File(_imgPath);
     Uint8List codedImage = await imageFile.readAsBytes();
@@ -63,6 +63,7 @@ class _PhotoPreviewScreenState extends State<PhotoPreviewScreen> {
   Widget _processButton(BuildContext context, String _imgPath) {
     bool _firstPress = true;
 
+    // construct the button logic
     Future<void> _processImage() async {
       File imageFile = new File(_imgPath);
       final FirebaseVisionImage visionImage =
@@ -74,6 +75,7 @@ class _PhotoPreviewScreenState extends State<PhotoPreviewScreen> {
               enableClassification: true));
       final List<Face> _faces = await _faceDetector.processImage(visionImage);
 
+      // transistion to processed result page
       Navigator.pop(context);
       Navigator.push(
         context,
@@ -85,6 +87,7 @@ class _PhotoPreviewScreenState extends State<PhotoPreviewScreen> {
       );
     }
 
+    // construct the button UI
     Widget button = RaisedButton(
       onPressed: () async {
         if (_firstPress) {
@@ -109,6 +112,7 @@ class _PhotoPreviewScreenState extends State<PhotoPreviewScreen> {
       ),
     );
 
+    // async wrapper for button after the image meta data is set
     return FutureBuilder(
         future: _setImageInfo(_imgPath),
         builder: (context, snapshot) {
@@ -116,15 +120,10 @@ class _PhotoPreviewScreenState extends State<PhotoPreviewScreen> {
             // Future hasn't finished yet, return a placeholder
             return Center(child: CircularProgressIndicator());
           }
-          return this._imgHeight < this._imgWidth
-              ? Container(
-                  alignment: Alignment(-0.9, 0),
-                  child: RotatedBox(quarterTurns: 1, child: button),
-                )
-              : Container(
-                  alignment: Alignment(0.0, 0.9),
-                  child: button,
-                );
+          return Container(
+            alignment: Alignment(0.0, 0.9),
+            child: button,
+          );
         });
   }
 }

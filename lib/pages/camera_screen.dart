@@ -64,13 +64,11 @@ class _TakePictureScreenState extends State<TakePictureScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.black,
       body: Container(
-        child: Stack(
+        child: Column(
           children: <Widget>[
-            Container(
-                height: double.infinity,
-                width: double.infinity,
-                child: _cameraPreviewWidget()),
+            _cameraPreviewWidget(),
             Container(
                 alignment: Alignment(0.0, 0.9),
                 child: _shutterButtonWidget(context))
@@ -86,6 +84,7 @@ class _TakePictureScreenState extends State<TakePictureScreen> {
       return Center(child: CircularProgressIndicator());
     }
 
+    // wrap the camera in aspect radio
     return AspectRatio(
       aspectRatio: controller.value.aspectRatio,
       child: CameraPreview(controller),
