@@ -35,10 +35,17 @@ dependencies:
   firebase_ml_vision: ^0.9.10
   image: ^2.1.19
   tflite: ^1.1.1
+  tflite_flutter: ^0.5.0
+  flutter_launcher_icons: ^0.8.1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+
+flutter_icons:
+  image_path: 'assets/images/launcher_icon.png'
+  android: true
+  ios: true
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -57,6 +64,7 @@ flutter:
     - assets/model.txt
     - assets/ssd_mobilenet.tflite
     - assets/ssd_mobilenet.txt
+    - assets/mobilefacenet.tflite
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

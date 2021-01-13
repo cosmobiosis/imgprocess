@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:imgprocess/pages/camera_screen.dart';
-import 'package:firebase_ml_vision/firebase_ml_vision.dart';
+// import 'package:imgprocess/pages/camera_screen.dart';
+import 'package:imgprocess/streaming/camera_screen.dart';
 
 Future<void> main() async {
   // Ensure that plugin services are initialized so that `availableCameras()`
@@ -24,7 +24,7 @@ class ImageProcessApp extends StatelessWidget {
         primaryColor: Colors.black,
       ),
       debugShowCheckedModeBanner: false,
-      home: TakePictureScreen(),
+      home: CameraStreamingScreen(),
     );
   }
 }
