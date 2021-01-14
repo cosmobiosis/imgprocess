@@ -7,8 +7,8 @@ import 'package:image/image.dart' as imglib;
 import 'package:tflite_flutter/tflite_flutter.dart' as tfl;
 import 'package:quiver/collection.dart';
 
-import 'package:imgprocess/utility/face_painter.dart';
-import 'package:imgprocess/utility/streaming_utils.dart';
+import 'package:imgprocess/streaming/face_painter.dart';
+import 'package:imgprocess/streaming/streaming_utils.dart';
 
 class CameraStreamingScreen extends StatefulWidget {
   @override
@@ -42,9 +42,15 @@ class _CameraStreamingScreenState extends State<CameraStreamingScreen> {
         child: Column(
           children: <Widget>[
             _cameraStreamingWidget(context),
-            Container(
-                alignment: Alignment(0.0, 0.9),
-                child: _toggleCameraButton()) // implement result here
+            Expanded(
+                child: Container(
+                    color: Colors.blue[200],
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        _toggleCameraButton(),
+                      ],
+                    ))) // implement result here
           ],
         ),
       ),

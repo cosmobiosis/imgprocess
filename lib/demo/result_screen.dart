@@ -4,7 +4,7 @@ import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_ml_vision/firebase_ml_vision.dart';
-import 'package:imgprocess/utility/facial_expression_classification.dart';
+import 'package:imgprocess/demo/facial_expression_classification.dart';
 import 'package:tflite/tflite.dart';
 import 'package:flutter/services.dart';
 

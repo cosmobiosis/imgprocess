@@ -12,7 +12,7 @@ class FaceDetectorPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final Paint paint = Paint()
-      ..color = Colors.teal
+      ..color = Colors.blue[200]
       ..strokeWidth = 6.0
       ..style = PaintingStyle.stroke;
     for (String label in results.keys) {
