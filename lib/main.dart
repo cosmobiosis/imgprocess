@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-// import 'package:imgprocess/pages/camera_screen.dart';
-import 'package:imgprocess/streaming/camera_screen.dart';
+// import 'package:imgprocess/demo/camera_screen.dart';
+// import 'package:imgprocess/streaming/camera_screen.dart';
+import 'package:imgprocess/pupil/camera_screen.dart';
 
 Future<void> main() async {
   // Ensure that plugin services are initialized so that `availableCameras()`
@@ -24,7 +25,7 @@ class ImageProcessApp extends StatelessWidget {
         primaryColor: Colors.black,
       ),
       debugShowCheckedModeBanner: false,
-      home: CameraStreamingScreen(),
+      home: TakePupilPictureScreen(),
     );
   }
 }
